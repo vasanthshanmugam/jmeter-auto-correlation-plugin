@@ -1,0 +1,24 @@
+[
+  {
+    "id": "io.github.vasanthshanmugam-jmeter-auto-correlation-plugin",
+    "name": "Auto-Correlation Plugin",
+    "description": "One-click detection and correlation of dynamic values (session IDs, CSRF tokens, OAuth tokens, hidden fields, ViewState) in JMeter test scripts. Similar to LoadRunner auto-correlation.",
+    "screenshotUrl": "",
+    "helpUrl": "https://github.com/vasanthshanmugam/jmeter-auto-correlation-plugin",
+    "vendor": "Vasanth",
+    "markerClass": "org.apache.jmeter.plugins.correlation.gui.CorrelationPostProcessorGui",
+    "componentClasses": [
+      "org.apache.jmeter.plugins.correlation.CorrelationPostProcessor"
+    ],
+    "canUninstall": true,
+    "versions": {
+      "1.0.0": {
+        "downloadUrl": "https://github.com/vasanthshanmugam/jmeter-auto-correlation-plugin/releases/download/v1.0.0/jmeter-auto-correlation-plugin-1.0.0-jar-with-dependencies.jar",
+        "libs": {
+          "io.github.vasanthshanmugam-jmeter-auto-correlation-plugin": "https://github.com/vasanthshanmugam/jmeter-auto-correlation-plugin/releases/download/v1.0.0/jmeter-auto-correlation-plugin-1.0.0-jar-with-dependencies.jar"
+        },
+        "changes": "Initial release: auto-detect and correlate session IDs, CSRF tokens, OAuth tokens, hidden fields, ViewState, SAML tokens, nonces, API keys, and correlation IDs."
+      }
+    }
+  }
+]
