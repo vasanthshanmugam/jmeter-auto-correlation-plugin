@@ -19,13 +19,26 @@ Automatically finds session IDs, CSRF tokens, OAuth tokens, hidden form fields, 
 
 ## Installation
 
-### Option A: Manual Install
+### Option A: JMeter Plugins Manager (Recommended)
+
+1. Open JMeter
+2. Go to **Options** > **Plugins Manager**
+3. Click the **Settings** tab (gear icon)
+4. In **Custom Plugin Repositories**, add this URL:
+   ```
+   https://raw.githubusercontent.com/vasanthshanmugam/jmeter-auto-correlation-plugin/main/plugins-descriptor.json
+   ```
+5. Click **Apply**, then go to the **Available Plugins** tab
+6. Find **"One-Click Auto-Correlation Plugin"** and install it
+7. Restart JMeter
+
+### Option B: Manual Install
 
 1. Download the latest JAR from the [Releases](https://github.com/vasanthshanmugam/jmeter-auto-correlation-plugin/releases) page
 2. Copy the JAR to your JMeter `lib/ext/` directory
 3. Restart JMeter
 
-### Option B: Build from Source
+### Option C: Build from Source
 
 ```bash
 git clone https://github.com/vasanthshanmugam/jmeter-auto-correlation-plugin.git
