@@ -1,4 +1,4 @@
-package org.apache.jmeter.plugins.correlation.engine;
+package io.github.vasanthshanmugam.jmeter.plugins.correlation.engine;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.extractor.RegexExtractor;
@@ -6,8 +6,8 @@ import org.apache.jmeter.extractor.json.jsonpath.JSONPostProcessor;
 import org.apache.jmeter.gui.GuiPackage;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
-import org.apache.jmeter.plugins.correlation.model.CorrelationCandidate;
-import org.apache.jmeter.plugins.correlation.model.ExtractorType;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationCandidate;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.ExtractorType;
 import org.apache.jmeter.protocol.http.control.Header;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase;

@@ -1,8 +1,8 @@
-package org.apache.jmeter.plugins.correlation.detection;
+package io.github.vasanthshanmugam.jmeter.plugins.correlation.detection;
 
-import org.apache.jmeter.plugins.correlation.model.CorrelationCandidate;
-import org.apache.jmeter.plugins.correlation.model.CorrelationType;
-import org.apache.jmeter.plugins.correlation.model.ExtractorType;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationCandidate;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationType;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.ExtractorType;
 import org.apache.jmeter.samplers.AbstractSampler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
  * Analyzes JMeter test plans to find dynamic values that need correlation.
  */
 public class CorrelationDetector {
-    
+
    private static final Logger log = LoggerFactory.getLogger(CorrelationDetector.class);
-    
+
     // Common session ID patterns (JSON/query-param format with quoted value)
     // Matches: sessionId: "value", sessionId="value", sessionid='value', etc.
     private static final Pattern SESSION_ID_PATTERN = Pattern.compile(
@@ -40,7 +40,7 @@ public class CorrelationDetector {
         ";(jsessionid)=([A-Fa-f0-9]{16,64})(?=[\"'>?&;\\s]|$)",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Common CSRF token patterns
     // Matches both:
     // - JSON: "csrf_token": "value"
@@ -49,21 +49,21 @@ public class CorrelationDetector {
         "(?:name=)?\"?(csrf|_csrf|csrf_token|_token|authenticity_token|__RequestVerificationToken)\"?\\s*(?:value\\s*=|[:=])\\s*\"([A-Za-z0-9_-]{6,128})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // ASP.NET ViewState pattern
     // Matches: name="__VIEWSTATE" value="xyz", __VIEWSTATE="xyz"
     private static final Pattern VIEWSTATE_PATTERN = Pattern.compile(
         "\"?(__VIEWSTATE|__EVENTVALIDATION)\"?\\s+value\\s*=\\s*\"([A-Za-z0-9+/=]{20,})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // JWT Token pattern (JSON Web Token)
     // Format: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
     private static final Pattern JWT_TOKEN_PATTERN = Pattern.compile(
         "\"?(token|access_token|id_token|auth_token|jwt|bearer)\"?\\s*[:=]\\s*\"?(eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+)\"?",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // OAuth Access Token pattern.
     // The \\\\? prefix on each quote handles BOTH normal JSON  ("access_token": "val")
     // AND escaped JSON  (\"access_token\": \"val\") as found in postman-echo-style
@@ -72,55 +72,55 @@ public class CorrelationDetector {
         "\\\\?\"?(access_token|refresh_token|bearer_token)\\\\?\"?\\s*[:=]\\s*\\\\?\"([A-Za-z0-9_.-]{8,512})\\\\?\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Correlation ID / Request ID / Trace ID patterns
     private static final Pattern CORRELATION_ID_PATTERN = Pattern.compile(
         "\"?(x-correlation-id|correlation-id|correlationid|request-id|requestid|trace-id|traceid|x-request-id|x-trace-id)\"?\\s*[:=]\\s*\"([a-f0-9-]{20,128})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Nonce pattern (number used once)
     private static final Pattern NONCE_PATTERN = Pattern.compile(
         "\"?(nonce|_nonce|wp_nonce)\"?\\s*[:=]\\s*\"([A-Za-z0-9]{8,64})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Timestamp patterns (Unix timestamp, milliseconds)
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile(
         "\"?(timestamp|_timestamp|ts|_ts|time)\"?\\s*[:=]\\s*\"?(\\d{10,13})\"?",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // API Key pattern
     private static final Pattern API_KEY_PATTERN = Pattern.compile(
         "\"?(api_key|apikey|key|x-api-key)\"?\\s*[:=]\\s*\"([A-Za-z0-9_-]{16,128})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Transaction ID / Order ID patterns
     private static final Pattern TRANSACTION_ID_PATTERN = Pattern.compile(
         "\"?(transaction_id|transactionid|order_id|orderid|invoice_id)\"?\\s*[:=]\\s*\"([A-Za-z0-9_-]{8,64})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // SAML Token pattern
     private static final Pattern SAML_TOKEN_PATTERN = Pattern.compile(
         "\"?(SAMLResponse|SAMLRequest|RelayState)\"?\\s*[:=]\\s*\"([A-Za-z0-9+/=]{50,})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Spring Security patterns
     private static final Pattern SPRING_SECURITY_PATTERN = Pattern.compile(
         "(?:name=)?\"?(_csrf|X-CSRF-TOKEN)\"?\\s*(?:content\\s*=|value\\s*=|[:=])\\s*\"([A-Za-z0-9_-]{20,128})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // WordPress nonce pattern
     private static final Pattern WORDPRESS_NONCE_PATTERN = Pattern.compile(
         "\"?(_wpnonce|security)\"?\\s*[:=]\\s*\"([A-Za-z0-9]{10,20})\"",
         Pattern.CASE_INSENSITIVE
     );
-    
+
     // Anti-forgery token (various frameworks)
     private static final Pattern ANTIFORGERY_PATTERN = Pattern.compile(
         "\"?(__RequestVerificationToken|AntiForgeryToken|VerificationToken)\"?\\s*[:=]\\s*\"([A-Za-z0-9_-]{20,256})\"",
@@ -157,18 +157,18 @@ public class CorrelationDetector {
      */
     public List<CorrelationCandidate> detectFromResponse(String responseBody, AbstractSampler sampler) {
         List<CorrelationCandidate> candidates = new ArrayList<>();
-        
+
         if (responseBody == null || responseBody.isEmpty()) {
             return candidates;
         }
-        
+
         // Log only if sampler is not null (in tests it might be null)
         if (sampler != null) {
             log.info("Analyzing response from: " + sampler.getName());
         } else {
             log.debug("Analyzing response (no sampler context)");
         }
-        
+
         // Detect session IDs (quoted format: sessionId="value")
         candidates.addAll(detectPattern(responseBody, SESSION_ID_PATTERN,
                                        CorrelationType.SESSION_ID, sampler));
@@ -182,53 +182,53 @@ public class CorrelationDetector {
                                        CorrelationType.SESSION_ID, sampler));
 
         // Detect CSRF tokens
-        candidates.addAll(detectPattern(responseBody, CSRF_TOKEN_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, CSRF_TOKEN_PATTERN,
                                        CorrelationType.CSRF_TOKEN, sampler));
-        
+
         // Detect ViewState
-        candidates.addAll(detectPattern(responseBody, VIEWSTATE_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, VIEWSTATE_PATTERN,
                                        CorrelationType.VIEWSTATE, sampler));
-        
+
         // Detect JWT tokens
-        candidates.addAll(detectPattern(responseBody, JWT_TOKEN_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, JWT_TOKEN_PATTERN,
                                        CorrelationType.AUTH_TOKEN, sampler));
-        
+
         // Detect OAuth tokens
-        candidates.addAll(detectPattern(responseBody, OAUTH_TOKEN_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, OAUTH_TOKEN_PATTERN,
                                        CorrelationType.AUTH_TOKEN, sampler));
-        
+
         // Detect Correlation/Request/Trace IDs
-        candidates.addAll(detectPattern(responseBody, CORRELATION_ID_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, CORRELATION_ID_PATTERN,
                                        CorrelationType.CORRELATION_ID, sampler));
-        
+
         // Detect Nonces
-        candidates.addAll(detectPattern(responseBody, NONCE_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, NONCE_PATTERN,
                                        CorrelationType.NONCE, sampler));
-        
+
         // Detect Timestamps
-        candidates.addAll(detectPattern(responseBody, TIMESTAMP_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, TIMESTAMP_PATTERN,
                                        CorrelationType.TIMESTAMP, sampler));
-        
+
         // Detect API Keys
-        candidates.addAll(detectPattern(responseBody, API_KEY_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, API_KEY_PATTERN,
                                        CorrelationType.CUSTOM, sampler));
-        
+
         // Detect Transaction IDs
-        candidates.addAll(detectPattern(responseBody, TRANSACTION_ID_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, TRANSACTION_ID_PATTERN,
                                        CorrelationType.CUSTOM, sampler));
-        
+
         // Detect SAML tokens
-        candidates.addAll(detectPattern(responseBody, SAML_TOKEN_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, SAML_TOKEN_PATTERN,
                                        CorrelationType.AUTH_TOKEN, sampler));
-        
+
         // Detect Spring Security tokens
-        candidates.addAll(detectPattern(responseBody, SPRING_SECURITY_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, SPRING_SECURITY_PATTERN,
                                        CorrelationType.CSRF_TOKEN, sampler));
-        
+
         // Detect WordPress nonces
-        candidates.addAll(detectPattern(responseBody, WORDPRESS_NONCE_PATTERN, 
+        candidates.addAll(detectPattern(responseBody, WORDPRESS_NONCE_PATTERN,
                                        CorrelationType.NONCE, sampler));
-        
+
         // Detect Anti-forgery tokens
         candidates.addAll(detectPattern(responseBody, ANTIFORGERY_PATTERN,
                                        CorrelationType.CSRF_TOKEN, sampler));
@@ -303,7 +303,7 @@ public class CorrelationDetector {
                 || value.contains("=") || value.contains("-") || value.contains("_");
         return hasEncodingChars || value.length() >= 32;
     }
-    
+
     /**
      * Detect values matching a specific pattern
      */
@@ -313,37 +313,37 @@ public class CorrelationDetector {
                                                      AbstractSampler sampler) {
         List<CorrelationCandidate> candidates = new ArrayList<>();
         Matcher matcher = pattern.matcher(responseBody);
-        
+
         while (matcher.find()) {
             String parameterName = matcher.group(1);
             String value = matcher.group(2);
-            
+
             log.debug("Detected " + type + ": " + parameterName + " = " + value);
-            
+
             CorrelationCandidate candidate = new CorrelationCandidate();
             candidate.setParameterName(parameterName);
             candidate.setSampleValue(value);
             candidate.setSourceResponse(sampler);
             candidate.setCorrelationType(type);
-            
+
             // Determine extractor type based on response content
             ExtractorType extractorType = determineExtractorType(responseBody, type);
             candidate.setExtractorType(extractorType);
-            
+
             // Calculate confidence score
             double confidence = calculateConfidence(value, type);
             candidate.setConfidenceScore(confidence);
-            
+
             // Generate variable name
             String varName = generateVariableName(parameterName, type);
             candidate.setVariableName(varName);
-            
+
             candidates.add(candidate);
         }
-        
+
         return candidates;
     }
-    
+
     /**
      * Determine which extractor type to use based on response content type.
      *
@@ -356,33 +356,33 @@ public class CorrelationDetector {
     private ExtractorType determineExtractorType(String responseBody, CorrelationType type) {
         return ExtractorType.REGEX;
     }
-    
+
     /**
      * Calculate confidence score for a detected value
      */
     private double calculateConfidence(String value, CorrelationType type) {
         double score = 0.5; // Base score
-        
+
         // Known types get higher confidence
-        if (type == CorrelationType.SESSION_ID || 
-            type == CorrelationType.CSRF_TOKEN || 
+        if (type == CorrelationType.SESSION_ID ||
+            type == CorrelationType.CSRF_TOKEN ||
             type == CorrelationType.VIEWSTATE) {
             score += 0.3;
         }
-        
+
         // Longer values (more random) = higher confidence
         if (value.length() > 32) {
             score += 0.1;
         }
-        
+
         // Contains mix of characters = higher confidence
         if (containsMixedCharacters(value)) {
             score += 0.1;
         }
-        
+
         return Math.min(score, 1.0); // Cap at 1.0
     }
-    
+
     /**
      * Check if value contains mixed characters (more likely to be dynamic)
      */
@@ -390,47 +390,47 @@ public class CorrelationDetector {
         boolean hasUpper = !value.equals(value.toLowerCase());
         boolean hasLower = !value.equals(value.toUpperCase());
         boolean hasDigit = value.matches(".*\\d.*");
-        
+
         int mixCount = 0;
         if (hasUpper) mixCount++;
         if (hasLower) mixCount++;
         if (hasDigit) mixCount++;
-        
+
         return mixCount >= 2;
     }
-    
+
     /**
      * Generate a variable name from parameter name
      */
     private String generateVariableName(String parameterName, CorrelationType type) {
         // Remove special characters and convert to uppercase
         String varName = parameterName.replaceAll("[^a-zA-Z0-9_]", "_").toUpperCase();
-        
+
         // Add prefix if not already present
         if (!varName.startsWith(type.name())) {
             varName = type.name() + "_" + varName;
         }
-        
+
         return varName;
     }
-    
+
     /**
      * Simple test method - we'll remove this later
      */
     public static void main(String[] args) {
         CorrelationDetector detector = new CorrelationDetector();
-        
+
         // Test with sample response
         String testResponse = "{\"sessionId\": \"abc123xyz789\", \"csrf_token\": \"WpwL7BxY83kJnN5dfKVx\"}";
-        
+
         System.out.println("Testing CorrelationDetector...");
         System.out.println("Test Response: " + testResponse);
-        
+
         List<CorrelationCandidate> results = detector.detectFromResponse(testResponse, null);
-        
+
         System.out.println("\nDetected " + results.size() + " candidates:");
         for (CorrelationCandidate candidate : results) {
-            System.out.println("  - " + candidate.getParameterName() + 
+            System.out.println("  - " + candidate.getParameterName() +
                              " (" + candidate.getCorrelationType() + ")" +
                              " Confidence: " + candidate.getConfidenceScore());
         }

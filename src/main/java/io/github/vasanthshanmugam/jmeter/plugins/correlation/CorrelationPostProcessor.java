@@ -1,4 +1,4 @@
-package org.apache.jmeter.plugins.correlation;
+package io.github.vasanthshanmugam.jmeter.plugins.correlation;
 
 import org.apache.jmeter.testelement.AbstractTestElement;
 

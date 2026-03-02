@@ -1,6 +1,6 @@
-package org.apache.jmeter.plugins.correlation.gui;
+package io.github.vasanthshanmugam.jmeter.plugins.correlation.gui;
 
-import org.apache.jmeter.plugins.correlation.model.CorrelationCandidate;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationCandidate;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

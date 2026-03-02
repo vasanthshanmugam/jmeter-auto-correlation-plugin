@@ -6,9 +6,9 @@
     "screenshotUrl": "",
     "helpUrl": "https://github.com/vasanthshanmugam/jmeter-auto-correlation-plugin",
     "vendor": "Vasanth",
-    "markerClass": "org.apache.jmeter.plugins.correlation.gui.CorrelationPostProcessorGui",
+    "markerClass": "io.github.vasanthshanmugam.jmeter.plugins.correlation.gui.CorrelationPostProcessorGui",
     "componentClasses": [
-      "org.apache.jmeter.plugins.correlation.CorrelationPostProcessor"
+      "io.github.vasanthshanmugam.jmeter.plugins.correlation.CorrelationPostProcessor"
     ],
     "canUninstall": true,
     "versions": {

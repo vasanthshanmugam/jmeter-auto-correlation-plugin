@@ -1,4 +1,4 @@
-package org.apache.jmeter.plugins.correlation.engine;
+package io.github.vasanthshanmugam.jmeter.plugins.correlation.engine;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.control.LoopController;
@@ -7,10 +7,10 @@ import org.apache.jmeter.JMeter;
 import org.apache.jmeter.gui.GuiPackage;
 import org.apache.jmeter.gui.tree.JMeterTreeModel;
 import org.apache.jmeter.gui.tree.JMeterTreeNode;
-import org.apache.jmeter.plugins.correlation.detection.CorrelationDetector;
-import org.apache.jmeter.plugins.correlation.model.CorrelationCandidate;
-import org.apache.jmeter.plugins.correlation.model.CorrelationType;
-import org.apache.jmeter.plugins.correlation.model.ExtractorType;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.detection.CorrelationDetector;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationCandidate;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationType;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.ExtractorType;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase;
 import org.apache.jmeter.samplers.AbstractSampler;
 import org.apache.jmeter.samplers.SampleEvent;

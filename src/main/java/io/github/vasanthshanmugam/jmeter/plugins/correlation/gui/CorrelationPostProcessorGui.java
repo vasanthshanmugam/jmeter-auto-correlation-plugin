@@ -1,9 +1,9 @@
-package org.apache.jmeter.plugins.correlation.gui;
+package io.github.vasanthshanmugam.jmeter.plugins.correlation.gui;
 
-import org.apache.jmeter.plugins.correlation.CorrelationPostProcessor;
-import org.apache.jmeter.plugins.correlation.engine.CorrelationApplicator;
-import org.apache.jmeter.plugins.correlation.engine.CorrelationEngine;
-import org.apache.jmeter.plugins.correlation.model.CorrelationCandidate;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.CorrelationPostProcessor;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.engine.CorrelationApplicator;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.engine.CorrelationEngine;
+import io.github.vasanthshanmugam.jmeter.plugins.correlation.model.CorrelationCandidate;
 import org.apache.jmeter.processor.gui.AbstractPostProcessorGui;
 import org.apache.jmeter.testelement.TestElement;
 import org.slf4j.Logger;
